@@ -3,6 +3,7 @@ package samples.jpmml.configuration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -18,11 +19,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @EnableAutoConfiguration
 @Configuration
+@PropertySource(value = "classpath:config/config.properties")
 public class ApplicationConfiguration {
     private static final Logger logger = LogManager.getLogger(ApplicationConfiguration.class);
 
