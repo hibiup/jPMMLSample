@@ -1,10 +1,9 @@
 package samples.jpmml.controller;
 
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -19,5 +18,5 @@ public interface RealtimeScoringController {
             })
     @ResponseBody
     @Async
-    CompletableFuture<Map<String, Object>> scoring();
+    CompletableFuture<ResponseEntity<Map<String, Object>>> scoring();
 }

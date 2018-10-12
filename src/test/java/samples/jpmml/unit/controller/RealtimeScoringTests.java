@@ -41,6 +41,6 @@ public class RealtimeScoringTests {
 
         MockHttpServletResponse response = mvcResult.getResponse();
         Map message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(), Map.class);
-        assert(message.get("Message").toString().equals("Hello Spring Boot 2"));
+        assert(message.get("score").toString().equals("2"));
     }
 }
