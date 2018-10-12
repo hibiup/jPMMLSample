@@ -8,7 +8,12 @@ public interface ModelRepositoryManager {
     Logger logger = LogManager.getLogger(ModelRepositoryManager.class);
 
     static String save(MultipartFile file, String location) {
-        String path = location + "/" + file.getName();
+        String path = location + "/" + file.getOriginalFilename();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         logger.debug(path);
         return path;
     }

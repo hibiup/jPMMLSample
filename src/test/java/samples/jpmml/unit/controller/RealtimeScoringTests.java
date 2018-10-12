@@ -5,12 +5,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
@@ -20,9 +22,11 @@ import samples.jpmml.controller.impl.RealtimeScoringControllerImpl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,17 +57,29 @@ public class RealtimeScoringTests {
 
     @Test
     public void getReleaseModel() throws Exception {
-        final String testFile = "svc.pmml";
+        List<MockMultipartFile> files = new ArrayList();
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(testFile).getFile());
-        InputStream fis = new FileInputStream(file);
+        List<String> fileNames = new ArrayList();
+        fileNames.add("svc.pmml");
+        fileNames.add("svc1.pmml");
 
-        MockMultipartFile multipartFile = new MockMultipartFile("model", testFile, null,
-                FileCopyUtils.copyToByteArray(fis));
+        fileNames.forEach(name -> {
+            File file = new File(getClass().getClassLoader().getResource(name).getFile());
+            try(InputStream fis = new FileInputStream(file)) {
+                MockMultipartFile multipartFile = new MockMultipartFile("model", name, null,
+                        FileCopyUtils.copyToByteArray(fis));
+                files.add(multipartFile);
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                fail();
+            }
+        });
 
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.multipart("/v1/release")
-                .file(multipartFile)
+        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/v1/release");
+        files.forEach(file -> requestBuilder.file(file));
+
+        MvcResult mvcResult = mvc.perform(requestBuilder
                 .accept(MediaType.APPLICATION_JSON)).andReturn();
 
         mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())

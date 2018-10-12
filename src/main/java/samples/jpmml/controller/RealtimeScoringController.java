@@ -17,7 +17,7 @@ public interface RealtimeScoringController {
             consumes = {MediaType.ALL_VALUE},
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    @Async
+    //@Async
     CompletableFuture<ResponseEntity<Map<String, Object>>> scoring();
 
 
@@ -26,6 +26,6 @@ public interface RealtimeScoringController {
             consumes = { MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    @Async
+    //@Async
     CompletableFuture<ResponseEntity<Map<String, Object>>> release(@RequestPart(value = "model") List<MultipartFile> files);
 }
