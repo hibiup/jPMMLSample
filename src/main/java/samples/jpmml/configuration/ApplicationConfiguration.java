@@ -23,8 +23,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @EnableAutoConfiguration
 @Configuration
