@@ -2,10 +2,7 @@ package samples.jpmml.controller.trait;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import samples.jpmml.controller.RealtimeScoringController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,13 +13,15 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
-import static samples.jpmml.controller.trait.ModelRepositoryManager.MODE.Create;
-
-public interface UploadFile extends RealtimeScoringController {
+public interface UploadFile {
     Logger logger = LogManager.getLogger(UploadFile.class);
 
-    default CompletableFuture<ResponseEntity<Map<String, Object>>> release(
-            List<MultipartFile> files
+    enum MODE {
+        Overwrite, Create
+    }
+
+    default List<Map<String, Object>> upload(
+            List<MultipartFile> files, MODE mode
     ) {
         List<Map<String, Object>> result = new ArrayList();
 
@@ -31,7 +30,7 @@ public interface UploadFile extends RealtimeScoringController {
             /** 1) 将 List 中的文件数据逐个取出，(异步)映射到 CompletableFuture.completedFuture 所指定的函数。
              *     ModelRepositoryManager.save 返回 String 类型的结果。*/
             .map(file -> CompletableFuture.supplyAsync(
-                () -> ModelRepositoryManager.save(file, getRepositoryLocation(), Create),getExecutorService()
+                () -> ModelRepositoryManager.save(file, getRepositoryLocation(), mode),getExecutorService()
             ))
             /** 2) 收集结果转成 List 返回。*/
             .collect(Collectors.toList());
@@ -52,8 +51,7 @@ public interface UploadFile extends RealtimeScoringController {
         }
 
         /** 6) 返回结果集．*/
-        ResponseEntity<Map<String, Object>> entity =  new ResponseEntity(result, HttpStatus.OK);
-        return CompletableFuture.completedFuture(entity);
+        return result;
     }
 
     String getRepositoryLocation();

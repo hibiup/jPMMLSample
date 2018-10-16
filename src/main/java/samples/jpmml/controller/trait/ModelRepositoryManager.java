@@ -6,12 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
+import samples.jpmml.controller.trait.UploadFile.*;
 
 public interface ModelRepositoryManager {
-    enum MODE {
-        Overwrite, Update, Create
-    }
-
     Logger logger = LogManager.getLogger(ModelRepositoryManager.class);
 
     static String save(MultipartFile file, String location, MODE mode) throws RuntimeException {
@@ -19,10 +16,11 @@ public interface ModelRepositoryManager {
         logger.debug(path);
         File outputFile = new File(path);
         try {
-            if (outputFile.exists())
+            if (outputFile.exists()) {
                 if (MODE.Overwrite != mode)
                     throw new FileAlreadyExistsException(path);
-            else if (MODE.Update == mode)
+            }
+            else if (MODE.Create != mode)
                 throw new FileNotFoundException(path);
 
             outputFile.createNewFile();

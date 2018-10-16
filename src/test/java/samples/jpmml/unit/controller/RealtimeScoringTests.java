@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -24,13 +23,13 @@ import samples.jpmml.controller.impl.RealtimeScoringControllerImpl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -76,6 +75,7 @@ public class RealtimeScoringTests {
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
 
         MockHttpServletResponse response = mvcResult.getResponse();
+
         Map message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(), Map.class);
         assert(message.get("score").toString().equals("2"));
     }
@@ -129,19 +129,47 @@ public class RealtimeScoringTests {
     }
 
 
-   /* @Test
+    @Test
     public void UpdateModel() throws Exception {
         File repoPath = new File(mail_stmp_enabled);
         if(!repoPath.exists()) fail();
         else assertTrue(Arrays.asList(repoPath.listFiles()).size() > 0);
 
-        MockMultipartHttpServletRequestBuilder requestBuilder = createRequestBuilder(Arrays.asList("svc.pmml"), "/v1/update");
+        MockMultipartHttpServletRequestBuilder requestBuilder = createRequestBuilder(Arrays.asList("svc.pmml"), "/v1/refresh");
 
         MvcResult mvcResult = mvc.perform(requestBuilder
                 .accept(MediaType.APPLICATION_JSON)).andReturn();
 
         mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
-    }*/
+    }
 
+
+    @Test
+    public void UpdateNoneExistsModel() throws Exception {
+        File repoPath = new File(mail_stmp_enabled);
+        if(!repoPath.exists()) fail();
+        else Arrays.asList(repoPath.listFiles()).forEach(file -> file.delete());
+
+        MockMultipartHttpServletRequestBuilder requestBuilder =
+                createRequestBuilder(Arrays.asList("svc.pmml"), "/v1/refresh");
+        requestBuilder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+
+        MvcResult mvcResult = mvc.perform(requestBuilder
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isGone())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+        Map<String, Exception> message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(),
+                new TypeReference<Map<String, Exception>>(){});
+
+        message.get("Error").toString().contains("FileNotFoundException");
+    }
 }

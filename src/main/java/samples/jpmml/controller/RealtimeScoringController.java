@@ -2,7 +2,6 @@ package samples.jpmml.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +16,6 @@ public interface RealtimeScoringController {
             consumes = {MediaType.ALL_VALUE},
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    //@Async
     CompletableFuture<ResponseEntity<Map<String, Object>>> scoring();
 
 
@@ -26,6 +24,13 @@ public interface RealtimeScoringController {
             consumes = { MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    //@Async
-    CompletableFuture<ResponseEntity<Map<String, Object>>> release(@RequestPart(value = "model") List<MultipartFile> files);
+    CompletableFuture<ResponseEntity<List<Map<String, Object>>>> release(@RequestPart(value = "model") List<MultipartFile> files);
+
+
+    @RequestMapping(value = "refresh",
+            method = RequestMethod.PUT,
+            consumes = { MediaType.MULTIPART_FORM_DATA_VALUE },
+            produces = { MediaType.APPLICATION_JSON_VALUE })
+    @ResponseBody
+    CompletableFuture<ResponseEntity<Map<String, Object>>> refresh(@RequestPart(value = "model") List<MultipartFile> files) throws Throwable;
 }
