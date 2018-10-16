@@ -44,7 +44,7 @@ public class RealtimeScoringTests {
     @Autowired
     private MappingJackson2JsonView jsonView;
 
-    @Value("${model.repository.localtion}") String mail_stmp_enabled;
+    @Value("${model.repository.location}") String model_repo_location;
 
     MockMultipartHttpServletRequestBuilder createRequestBuilder(List<String> fileNames, String url) {
         List<MockMultipartFile> files = new ArrayList();
@@ -86,7 +86,7 @@ public class RealtimeScoringTests {
 
     @Test
     public void releaseModel() throws Exception {
-        File repoPath = new File(mail_stmp_enabled);
+        File repoPath = new File(model_repo_location);
         if(!repoPath.exists()) repoPath.mkdir();
         else Arrays.asList(repoPath.listFiles()).forEach(file -> file.delete());
 
@@ -114,7 +114,7 @@ public class RealtimeScoringTests {
 
     @Test
     public void releaseExistingModel() throws Exception {
-        File repoPath = new File(mail_stmp_enabled);
+        File repoPath = new File(model_repo_location);
         assertTrue(repoPath.exists());
         assertTrue(Arrays.asList(repoPath.listFiles()).size() > 0);
 
@@ -137,7 +137,7 @@ public class RealtimeScoringTests {
 
     @Test
     public void UpdateModel() throws Exception {
-        File repoPath = new File(mail_stmp_enabled);
+        File repoPath = new File(model_repo_location);
         if(!repoPath.exists()) fail();
         else assertTrue(Arrays.asList(repoPath.listFiles()).size() > 0);
 
@@ -157,7 +157,7 @@ public class RealtimeScoringTests {
 
     @Test
     public void UpdateNoneExistsModel() throws Exception {
-        File repoPath = new File(mail_stmp_enabled);
+        File repoPath = new File(model_repo_location);
         if(!repoPath.exists()) fail();
         else Arrays.asList(repoPath.listFiles()).forEach(file -> file.delete());
 
@@ -181,5 +181,23 @@ public class RealtimeScoringTests {
                 new TypeReference<Map<String, Exception>>(){});
 
         message.get("FAILED").toString().contains("FileNotFoundException");
+    }
+
+    @Test
+    public void deleteModel() throws Exception {
+        //File repoPath = new File(model_repo_location + "/svc" + ".pmml");
+        //if(!repoPath.exists()) fail();
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.delete("/v1/retire/svc")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk());
+
+        // Delete twice, the second time should got "Gone" status.
+        mvcResult = mvc.perform(MockMvcRequestBuilders.delete("/v1/retire/svc"))
+                .andReturn();
+        mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isGone());
     }
 }

@@ -7,8 +7,9 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.Executor;
 
 @Service
-public class FileUploadService implements UploadFile {
-    @Value("${model.repository.localtion}") String model_repo_location;
+public class FileUploadService implements UploadFile, DeleteFile {
+    @Value("${model.repository.location}") String model_repo_location;
+
     @Autowired Executor executor;
 
     @Override

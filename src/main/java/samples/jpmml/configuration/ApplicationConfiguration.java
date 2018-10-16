@@ -35,7 +35,6 @@ public class ApplicationConfiguration implements AsyncConfigurer {
     @Value("${thread.pool.max_size}") int threadPoolMaxSize;
     @Value("${thread.pool.min_size}") int threadPoolMinSize;
     @Value("${thread.pool.capacity}") int threadPoolCapacity;
-    //@Value("${model.repository.localtion}") String model_repo_location;
 
     @Bean
     public View jsonView() {

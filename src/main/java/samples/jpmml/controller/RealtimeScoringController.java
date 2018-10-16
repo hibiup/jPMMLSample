@@ -33,4 +33,11 @@ public interface RealtimeScoringController {
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
     CompletableFuture<ResponseEntity<Map<String, Object>>> refresh(@RequestPart(value = "model") List<MultipartFile> files);
+
+    @RequestMapping(value = "retire/{name}",
+            method = RequestMethod.DELETE,
+            consumes = { MediaType.ALL_VALUE },
+            produces = { MediaType.APPLICATION_JSON_VALUE })
+    @ResponseBody
+    CompletableFuture<ResponseEntity<Map<String, Object>>> retire(@PathVariable(value = "name") String name);
 }
