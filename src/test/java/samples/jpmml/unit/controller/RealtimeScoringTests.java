@@ -185,8 +185,8 @@ public class RealtimeScoringTests {
 
     @Test
     public void deleteModel() throws Exception {
-        //File repoPath = new File(model_repo_location + "/svc" + ".pmml");
-        //if(!repoPath.exists()) fail();
+        File repoPath = new File(model_repo_location + "/svc" + ".pmml");
+        if(!repoPath.exists()) fail();
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.delete("/v1/retire/svc")
                 .accept(MediaType.APPLICATION_JSON))

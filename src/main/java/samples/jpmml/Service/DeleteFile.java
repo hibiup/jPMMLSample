@@ -6,13 +6,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 public interface DeleteFile extends ModelRepositoryManager{
     Logger logger = LogManager.getLogger(DeleteFile.class);
-
-    Executor getExecutorService();
-    String getRepositoryLocation();
 
     default CompletableFuture retire(String modelName) {
         CompletableFuture f = CompletableFuture.runAsync(() -> {

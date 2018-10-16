@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 public interface UploadFile extends ModelRepositoryManager{
@@ -76,7 +75,4 @@ public interface UploadFile extends ModelRepositoryManager{
         }
         return path;
     }
-
-    String getRepositoryLocation();
-    Executor getExecutorService();
 }
