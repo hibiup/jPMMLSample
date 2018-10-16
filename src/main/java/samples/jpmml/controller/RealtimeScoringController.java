@@ -32,5 +32,5 @@ public interface RealtimeScoringController {
             consumes = { MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    CompletableFuture<ResponseEntity<Map<String, Object>>> refresh(@RequestPart(value = "model") List<MultipartFile> files) throws Throwable;
+    CompletableFuture<ResponseEntity<Map<String, Object>>> refresh(@RequestPart(value = "model") List<MultipartFile> files);
 }

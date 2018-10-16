@@ -1,15 +1,12 @@
 package samples.jpmml.configuration;
 
-import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -24,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
@@ -39,6 +35,7 @@ public class ApplicationConfiguration implements AsyncConfigurer {
     @Value("${thread.pool.max_size}") int threadPoolMaxSize;
     @Value("${thread.pool.min_size}") int threadPoolMinSize;
     @Value("${thread.pool.capacity}") int threadPoolCapacity;
+    //@Value("${model.repository.localtion}") String model_repo_location;
 
     @Bean
     public View jsonView() {
@@ -53,7 +50,6 @@ public class ApplicationConfiguration implements AsyncConfigurer {
         executor.setQueueCapacity(threadPoolCapacity);
         executor.initialize();
         return executor;
-        //return new ExceptionHandlingAsyncTaskExecutor(executor);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package samples.jpmml.controller.trait;
+package samples.jpmml.Service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,12 +6,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
-import samples.jpmml.controller.trait.UploadFile.*;
+import samples.jpmml.Service.UploadFile.*;
 
 public interface ModelRepositoryManager {
     Logger logger = LogManager.getLogger(ModelRepositoryManager.class);
 
-    static String save(MultipartFile file, String location, MODE mode) throws RuntimeException {
+    default String save(MultipartFile file, String location, MODE mode) throws RuntimeException {
         String path = location + "/" + file.getOriginalFilename();
         logger.debug(path);
         File outputFile = new File(path);

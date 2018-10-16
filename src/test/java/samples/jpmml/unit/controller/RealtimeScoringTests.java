@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+import samples.jpmml.Service.FileUploadService;
 import samples.jpmml.configuration.ApplicationConfiguration;
 import samples.jpmml.controller.impl.RealtimeScoringControllerImpl;
 
@@ -35,7 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes={
         RealtimeScoringControllerImpl.class,
-        ApplicationConfiguration.class})
+        ApplicationConfiguration.class,
+        FileUploadService.class})
 @AutoConfigureMockMvc
 public class RealtimeScoringTests {
     @Autowired private MockMvc mvc;
@@ -136,6 +138,10 @@ public class RealtimeScoringTests {
         else assertTrue(Arrays.asList(repoPath.listFiles()).size() > 0);
 
         MockMultipartHttpServletRequestBuilder requestBuilder = createRequestBuilder(Arrays.asList("svc.pmml"), "/v1/refresh");
+        requestBuilder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
 
         MvcResult mvcResult = mvc.perform(requestBuilder
                 .accept(MediaType.APPLICATION_JSON)).andReturn();

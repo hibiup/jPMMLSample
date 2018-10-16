@@ -1,4 +1,4 @@
-package samples.jpmml.controller.trait;
+package samples.jpmml.Service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +13,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
-public interface UploadFile {
+public interface UploadFile extends ModelRepositoryManager{
     Logger logger = LogManager.getLogger(UploadFile.class);
 
     enum MODE {
@@ -30,7 +30,7 @@ public interface UploadFile {
             /** 1) 将 List 中的文件数据逐个取出，(异步)映射到 CompletableFuture.completedFuture 所指定的函数。
              *     ModelRepositoryManager.save 返回 String 类型的结果。*/
             .map(file -> CompletableFuture.supplyAsync(
-                () -> ModelRepositoryManager.save(file, getRepositoryLocation(), mode),getExecutorService()
+                () -> save(file, getRepositoryLocation(), mode),getExecutorService()
             ))
             /** 2) 收集结果转成 List 返回。*/
             .collect(Collectors.toList());
