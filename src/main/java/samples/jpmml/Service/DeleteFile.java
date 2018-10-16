@@ -2,6 +2,7 @@ package samples.jpmml.Service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.scheduling.annotation.Async;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 public interface DeleteFile extends ModelRepositoryManager{
     Logger logger = LogManager.getLogger(DeleteFile.class);
 
+    @Async
     default CompletableFuture retire(String modelName) {
         CompletableFuture f = CompletableFuture.runAsync(() -> {
             try {

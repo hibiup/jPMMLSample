@@ -2,6 +2,7 @@ package samples.jpmml.Service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -22,26 +23,29 @@ public interface UploadFile extends ModelRepositoryManager{
     default List<CompletableFuture> upload(
             List<MultipartFile> files, MODE mode
     ) {
-        List<CompletableFuture> futures = files.stream().map(file -> {
-            CompletableFuture stage1 = CompletableFuture.supplyAsync(() ->
-                    save(file, getRepositoryLocation(), mode), getExecutorService()
-            );
-
-            CompletableFuture resultHandler = stage1.handleAsync((s, t) -> {
-                Map<String, Object> result = new HashMap();
-                if (t != null)
-                    result.put("FAILED", t);
-                else
-                    result.put("SUCCESS", s);
-                return result;
-            }, getExecutorService() );
-
-            return resultHandler;
-        }).collect(Collectors.toList());
-
+        List<CompletableFuture> futures = files.stream().map(file -> uploadSingle(file, mode)).collect(Collectors.toList());
         return futures;
     }
 
+    @Async
+    default CompletableFuture uploadSingle(
+            MultipartFile file, MODE mode
+    ) {
+        CompletableFuture stage1 = CompletableFuture.supplyAsync(() ->
+                save(file, getRepositoryLocation(), mode), getExecutorService()
+        );
+
+        CompletableFuture resultHandler = stage1.handleAsync((s, t) -> {
+            Map<String, Object> result = new HashMap();
+            if (t != null)
+                result.put("FAILED", t);
+            else
+                result.put("SUCCESS", s);
+            return result;
+        }, getExecutorService() );
+
+        return resultHandler;
+    }
 
     default String save(MultipartFile file, String location, MODE mode) throws RuntimeException {
         String path = location + "/" + file.getOriginalFilename();
