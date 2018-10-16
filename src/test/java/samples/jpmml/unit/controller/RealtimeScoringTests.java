@@ -71,7 +71,9 @@ public class RealtimeScoringTests {
     @Test
     public void getScoring() throws Exception {
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/v1/scoring")
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
 
         mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
@@ -96,7 +98,9 @@ public class RealtimeScoringTests {
         MockMultipartHttpServletRequestBuilder requestBuilder = createRequestBuilder(fileNames, "/v1/release");
 
         MvcResult mvcResult = mvc.perform(requestBuilder
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
 
         mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
@@ -176,6 +180,6 @@ public class RealtimeScoringTests {
         Map<String, Exception> message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(),
                 new TypeReference<Map<String, Exception>>(){});
 
-        message.get("Error").toString().contains("FileNotFoundException");
+        message.get("FAILED").toString().contains("FileNotFoundException");
     }
 }

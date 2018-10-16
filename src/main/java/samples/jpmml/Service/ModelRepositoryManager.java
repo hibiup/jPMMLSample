@@ -17,7 +17,7 @@ public interface ModelRepositoryManager {
         File outputFile = new File(path);
         try {
             if (outputFile.exists()) {
-                if (MODE.Overwrite != mode)
+                if (MODE.Update != mode)
                     throw new FileAlreadyExistsException(path);
             }
             else if (MODE.Create != mode)
