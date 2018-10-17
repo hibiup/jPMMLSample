@@ -1,4 +1,4 @@
-package samples.jpmml.Service;
+package samples.jpmml.service.impl;
 
 import org.springframework.stereotype.Service;
 

@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import samples.jpmml.Service.ModelRepositoryManager;
+import samples.jpmml.service.RepositoryManager;
 import samples.jpmml.controller.RealtimeScoringController;
-import samples.jpmml.controller.trait.RealtimeScoring;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +18,15 @@ import java.util.concurrent.Executor;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
-import static samples.jpmml.Service.UploadFile.MODE.Create;
-import static samples.jpmml.Service.UploadFile.MODE.Update;
+import static samples.jpmml.service.impl.UploadFile.MODE.Create;
+import static samples.jpmml.service.impl.UploadFile.MODE.Update;
 
 @RestController
 public class RealtimeScoringControllerImpl implements RealtimeScoringController, RealtimeScoring {
     @Autowired
     Executor executor;
     @Autowired
-    ModelRepositoryManager repoManager;
+    RepositoryManager repoManager;
 
     @Override
     public CompletableFuture<ResponseEntity<List<Map<String, Object>>>> release(

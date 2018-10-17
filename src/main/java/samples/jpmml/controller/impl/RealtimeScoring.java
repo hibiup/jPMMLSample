@@ -1,4 +1,4 @@
-package samples.jpmml.controller.trait;
+package samples.jpmml.controller.impl;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

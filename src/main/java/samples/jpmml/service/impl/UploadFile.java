@@ -1,9 +1,11 @@
-package samples.jpmml.Service;
+package samples.jpmml.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
+import samples.jpmml.service.ExecutorManager;
+import samples.jpmml.service.RepositoryManager;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
@@ -13,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public interface UploadFile extends ModelRepositoryManager{
+public interface UploadFile extends RepositoryManager, ExecutorManager {
     Logger logger = LogManager.getLogger(UploadFile.class);
 
     enum MODE {

@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-import samples.jpmml.Service.FileUploadService;
+import samples.jpmml.service.impl.ModelRepositoryManager;
 import samples.jpmml.configuration.ApplicationConfiguration;
 import samples.jpmml.controller.impl.RealtimeScoringControllerImpl;
 
@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes={
         RealtimeScoringControllerImpl.class,
         ApplicationConfiguration.class,
-        FileUploadService.class})
+        ModelRepositoryManager.class})
 @AutoConfigureMockMvc
 public class RealtimeScoringTests {
     @Autowired private MockMvc mvc;

@@ -1,13 +1,12 @@
-package samples.jpmml.Service;
+package samples.jpmml.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import samples.jpmml.service.impl.UploadFile;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
-public interface ModelRepositoryManager {
-    Executor getExecutorService();
+public interface RepositoryManager {
     String getRepositoryLocation();
 
     List<CompletableFuture> upload(

@@ -1,14 +1,16 @@
-package samples.jpmml.Service;
+package samples.jpmml.service.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Async;
+import samples.jpmml.service.ExecutorManager;
+import samples.jpmml.service.RepositoryManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.concurrent.CompletableFuture;
 
-public interface DeleteFile extends ModelRepositoryManager{
+public interface DeleteFile extends RepositoryManager, ExecutorManager {
     Logger logger = LogManager.getLogger(DeleteFile.class);
 
     @Async
