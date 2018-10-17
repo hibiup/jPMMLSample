@@ -41,33 +41,24 @@ public class RealtimeScoringControllerImpl implements RealtimeScoringController/
     public CompletableFuture<ResponseEntity> release(
             @RequestPart(value = "model") MultipartFile file
     ) {
-        return repoManager.uploadSingle(file, Create).thenApply(result -> {
-            if(result instanceof Exception)
-                return new ResponseEntity(result, HttpStatus.CONFLICT);
-            else
-                return new ResponseEntity(result, HttpStatus.OK);
-        });
+        return repoManager.uploadSingle(file, Create).thenApply(result ->
+            (result instanceof Exception)? new ResponseEntity(result, HttpStatus.CONFLICT):new ResponseEntity(result, HttpStatus.OK)
+        );
     }
 
     @Override
     public CompletableFuture<ResponseEntity> refresh (
             @RequestPart(value = "model") MultipartFile file
     ) {
-        return repoManager.uploadSingle(file, Update).thenApply(result -> {
-            if(result instanceof Exception)
-                return new ResponseEntity(result, HttpStatus.GONE);
-            else
-                return new ResponseEntity(result, HttpStatus.OK);
-        });
+        return repoManager.uploadSingle(file, Update).thenApply(result ->
+                (result instanceof Exception)? new ResponseEntity(result, HttpStatus.GONE):new ResponseEntity(result, HttpStatus.OK)
+        );
     }
 
     @Override
     public CompletableFuture<ResponseEntity> retire(@PathVariable(value = "name") String name) {
-        return repoManager.retire(name).thenApply(result -> {
-            if(result instanceof Exception)
-                return new ResponseEntity(result, HttpStatus.GONE);
-            else
-                return new ResponseEntity(result, HttpStatus.OK);
-        });
+        return repoManager.retire(name).thenApply(result ->
+                (result instanceof Exception)? new ResponseEntity(result, HttpStatus.GONE):new ResponseEntity(result, HttpStatus.OK)
+        );
     }
 }

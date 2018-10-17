@@ -10,7 +10,7 @@ public interface RepositoryManager {
 
     CompletableFuture<Object> uploadSingle( MultipartFile file, UploadFile.MODE mode );
 
-    CompletableFuture retire(String filename);
+    CompletableFuture<Object> retire(String filename);
 
     PMML getModel(String modelName);
 }

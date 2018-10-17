@@ -39,5 +39,5 @@ public interface RealtimeScoringController {
             consumes = { MediaType.ALL_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    CompletableFuture<ResponseEntity> retire(@PathVariable(value = "name") String name);
+    CompletableFuture retire(@PathVariable(value = "name") String name);
 }
