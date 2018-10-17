@@ -142,7 +142,9 @@ public class RealtimeScoringTests {
         MockMultipartHttpServletRequestBuilder requestBuilder = createRequestBuilder(Arrays.asList("svc.pmml"), "/v1/release");
 
         MvcResult mvcResult = mvc.perform(requestBuilder
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
 
         mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isConflict())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
@@ -162,7 +164,9 @@ public class RealtimeScoringTests {
         });
 
         MvcResult mvcResult = mvc.perform(requestBuilder
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
 
         mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
