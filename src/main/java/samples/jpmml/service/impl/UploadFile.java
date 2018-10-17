@@ -4,47 +4,30 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
-import samples.jpmml.service.ExecutorManager;
+import samples.jpmml.service.RepositoryLocationService;
 import samples.jpmml.service.RepositoryManager;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-public interface UploadFile extends RepositoryManager, ExecutorManager {
+public interface UploadFile extends RepositoryManager, RepositoryLocationService {
     Logger logger = LogManager.getLogger(UploadFile.class);
 
     enum MODE {
         Update, Create
     }
 
-    default List<CompletableFuture> upload(
-            List<MultipartFile> files, MODE mode
-    ) {
-        List<CompletableFuture> futures = files.stream().map(file -> uploadSingle(file, mode)).collect(Collectors.toList());
-        return futures;
-    }
-
     @Async
-    default CompletableFuture uploadSingle(
+    default CompletableFuture<Object> uploadSingle(
             MultipartFile file, MODE mode
     ) {
-        CompletableFuture stage1 = CompletableFuture.supplyAsync(() ->
-                save(file, getRepositoryLocation(), mode), getExecutorService()
+        CompletableFuture<String> stage1 = CompletableFuture.supplyAsync(() ->
+                save(file, getRepositoryLocation(), mode)
         );
 
-        CompletableFuture resultHandler = stage1.handleAsync((s, t) -> {
-            Map<String, Object> result = new HashMap();
-            if (t != null)
-                result.put("FAILED", t);
-            else
-                result.put("SUCCESS", s);
-            return result;
-        }, getExecutorService() );
+        CompletableFuture<Object> resultHandler = stage1.handle((s, t) ->
+                (t == null)?s:t
+        );
 
         return resultHandler;
     }

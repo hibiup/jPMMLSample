@@ -1,6 +1,8 @@
 package samples.jpmml.unit.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,11 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+import samples.jpmml.service.ModelManager;
 import samples.jpmml.service.impl.ModelRepositoryManager;
 import samples.jpmml.configuration.ApplicationConfiguration;
 import samples.jpmml.controller.impl.RealtimeScoringControllerImpl;
+import samples.jpmml.service.impl.RealtimeScoringService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,12 +41,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes={
         RealtimeScoringControllerImpl.class,
         ApplicationConfiguration.class,
-        ModelRepositoryManager.class})
+        ModelRepositoryManager.class,
+        RealtimeScoringService.class})
 @AutoConfigureMockMvc
 public class RealtimeScoringTests {
     @Autowired private MockMvc mvc;
     @Autowired
     private MappingJackson2JsonView jsonView;
+
+    ObjectMapper mapper = new ObjectMapper();
 
     @Value("${model.repository.location}") String model_repo_location;
 
@@ -69,8 +76,27 @@ public class RealtimeScoringTests {
     }
 
     @Test
-    public void getScoring() throws Exception {
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/v1/scoring")
+    public void score() throws Exception {
+        Map<String, Number> input = new HashMap();
+        input.put("Sepal.Length", 1);
+        input.put("Sepal.Width", 1);
+        input.put("Petal.Length", 1);
+        input.put("Petal.Width", 1);
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/v1/scoring/svc")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsBytes(input))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+
+        // The second should load model from cache.
+        mvcResult = mvc.perform(MockMvcRequestBuilders.get("/v1/scoring/svc")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsBytes(input))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(request().asyncStarted())
                 .andReturn();
@@ -81,7 +107,7 @@ public class RealtimeScoringTests {
         MockHttpServletResponse response = mvcResult.getResponse();
 
         Map message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(), Map.class);
-        assert(message.get("score").toString().equals("2"));
+        assert(message.keySet().contains("Species"));
     }
 
     @Test
@@ -93,7 +119,7 @@ public class RealtimeScoringTests {
 
         List<String> fileNames = new ArrayList();
         fileNames.add("svc.pmml");
-        fileNames.add("svc1.pmml");
+        //fileNames.add("svc1.pmml");
 
         MockMultipartHttpServletRequestBuilder requestBuilder = createRequestBuilder(fileNames, "/v1/release");
 
@@ -104,11 +130,6 @@ public class RealtimeScoringTests {
 
         mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
-
-        MockHttpServletResponse response = mvcResult.getResponse();
-        List<Map<String, String>> message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(), List.class);
-        assert(message.size() >= 1);
-        message.forEach(msg -> assertTrue(msg.get("SUCCESS") instanceof String));
     }
 
 
@@ -123,15 +144,8 @@ public class RealtimeScoringTests {
         MvcResult mvcResult = mvc.perform(requestBuilder
                 .accept(MediaType.APPLICATION_JSON)).andReturn();
 
-        mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
+        mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isConflict())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
-
-        MockHttpServletResponse response = mvcResult.getResponse();
-        List<Map<String, Exception>> message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(),
-                new TypeReference<List<Map<String, Exception>>>(){});
-
-        assert(message.size() >= 1);
-        message.forEach(msg -> assertTrue(msg.get("FAILED") instanceof Exception));
     }
 
 
@@ -175,12 +189,6 @@ public class RealtimeScoringTests {
 
         mvc.perform(asyncDispatch(mvcResult)).andExpect(status().isGone())
                 .andExpect(content().contentType("application/json;charset=UTF-8"));
-
-        MockHttpServletResponse response = mvcResult.getResponse();
-        Map<String, Exception> message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(),
-                new TypeReference<Map<String, Exception>>(){});
-
-        message.get("FAILED").toString().contains("FileNotFoundException");
     }
 
     @Test

@@ -1,19 +1,14 @@
 package samples.jpmml.controller.impl;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import samples.jpmml.controller.RealtimeScoringController;
+import samples.jpmml.service.impl.RealtimeScoringService;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public interface RealtimeScoring extends RealtimeScoringController {
-    default CompletableFuture<ResponseEntity<Map<String, Object>>> scoring() {
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("score", "2");
-
-        ResponseEntity<Map<String, Object>> entity =  new ResponseEntity(model, HttpStatus.OK);
-        return CompletableFuture.completedFuture(entity);
+public interface RealtimeScoring {
+    default CompletableFuture scoring(RealtimeScoringService realtimeScoringService, Map<String, Number> input, String model) {
+        return CompletableFuture.completedFuture(input).thenApply( i ->
+                realtimeScoringService.scoring(model, input)
+        );
     }
 }

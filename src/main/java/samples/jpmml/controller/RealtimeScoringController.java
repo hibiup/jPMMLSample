@@ -5,18 +5,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RequestMapping(value = "/v1")
 public interface RealtimeScoringController {
-    @RequestMapping(value = "scoring",
+    @RequestMapping(value = "scoring/{name}",
             method = RequestMethod.GET,
             consumes = {MediaType.ALL_VALUE},
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    CompletableFuture<ResponseEntity<Map<String, Object>>> scoring();
+    CompletableFuture<ResponseEntity> scoring(@PathVariable(value = "name") String name,
+                                                                   @RequestBody Map<String, Number> input);
 
 
     @RequestMapping(value = "release",
@@ -24,7 +24,7 @@ public interface RealtimeScoringController {
             consumes = { MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    CompletableFuture<ResponseEntity<List<Map<String, Object>>>> release(@RequestPart(value = "model") List<MultipartFile> files);
+    CompletableFuture<ResponseEntity> release(@RequestPart(value = "model") MultipartFile files);
 
 
     @RequestMapping(value = "refresh",
@@ -32,12 +32,12 @@ public interface RealtimeScoringController {
             consumes = { MediaType.MULTIPART_FORM_DATA_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    CompletableFuture<ResponseEntity<Map<String, Object>>> refresh(@RequestPart(value = "model") List<MultipartFile> files);
+    CompletableFuture<ResponseEntity> refresh(@RequestPart(value = "model") MultipartFile file);
 
     @RequestMapping(value = "retire/{name}",
             method = RequestMethod.DELETE,
             consumes = { MediaType.ALL_VALUE },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    CompletableFuture<ResponseEntity<Map<String, Object>>> retire(@PathVariable(value = "name") String name);
+    CompletableFuture<ResponseEntity> retire(@PathVariable(value = "name") String name);
 }
