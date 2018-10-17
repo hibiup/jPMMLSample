@@ -1,8 +1,6 @@
 package samples.jpmml.unit.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequ
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-import samples.jpmml.service.ModelManager;
 import samples.jpmml.service.impl.ModelRepositoryManager;
 import samples.jpmml.configuration.ApplicationConfiguration;
 import samples.jpmml.controller.impl.RealtimeScoringControllerImpl;

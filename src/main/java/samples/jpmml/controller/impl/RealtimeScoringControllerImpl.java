@@ -1,6 +1,5 @@
 package samples.jpmml.controller.impl;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import samples.jpmml.service.ModelManager;
 import samples.jpmml.service.RepositoryManager;
 import samples.jpmml.controller.RealtimeScoringController;
-import samples.jpmml.service.impl.RealtimeScoringService;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

@@ -6,8 +6,6 @@ import samples.jpmml.service.ModelManager;
 
 import java.util.concurrent.CompletableFuture;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
-
 public interface RealtimeScoring<T, U> extends ModelManager<T, U> {
     @Override
     @Async
