@@ -28,7 +28,7 @@ public class RealtimeScoringService extends AbstractResourceManager implements R
     public Map<String, Object> predict(ModelEvaluator evaluator, Map<String, Number> input) {
         Map<FieldName, FieldValue> arguments  = translateInput(evaluator.getActiveFields(), input);
 
-        Map<FieldName, ?> results = evaluator.evaluate(arguments );
+        Map<FieldName, ?> results = evaluator.evaluate(arguments);
         List<TargetField> targetFields = evaluator.getTargetFields();
 
         return translaterOutput(targetFields, results);

@@ -12,6 +12,7 @@ import samples.jpmml.service.ModelManager;
 import samples.jpmml.service.RepositoryManager;
 import samples.jpmml.controller.RealtimeScoringController;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import static samples.jpmml.service.impl.UploadFile.MODE.Create;
@@ -30,6 +31,9 @@ public class RealtimeScoringControllerImpl implements RealtimeScoringController/
             @PathVariable(value = "name") String name,
             @RequestBody Map<String, Number> input) {
         return modelManager.scoring(name, input)
+                /** handle 的插入位子会影响对结果的抓取，如果将 handle　移入 scoring. 例如插入 predict 之后会引起其他问题．
+                 * 参考 ReadtimeScoring.java 中的说明． */
+                .handle((s, t) ->  (t == null)?s:t)
                 .thenApply(result ->(result instanceof Exception)?
                         new ResponseEntity(result, HttpStatus.BAD_REQUEST): new ResponseEntity(result, HttpStatus.OK)
                 );

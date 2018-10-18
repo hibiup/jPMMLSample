@@ -107,6 +107,51 @@ public class RealtimeScoringTests {
         assert(message.keySet().contains("Species"));
     }
 
+
+    @Test
+    public void scoreWithInsufficientInput() throws Exception {
+        Map<String, Number> input = new HashMap();
+        input.put("Sepal.Length", 1);
+        input.put("Sepal.Width", 1);
+        input.put("Petal.Length", 1);
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/v1/scoring/svc")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsBytes(input))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+    }
+
+    @Test
+    public void scoreWithInvalidInput() throws Exception {
+        Map<String, Number> input = new HashMap();
+        input.put("Sepal.Length", 1);
+        input.put("Sepal.Width", 1);
+        input.put("Petal.Length", 1);
+        input.put("Petal.Width", null);
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get("/v1/scoring/svc")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsBytes(input))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(request().asyncStarted())
+                .andReturn();
+
+        mvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType("application/json;charset=UTF-8"));
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+
+        Map message = jsonView.getObjectMapper().readValue(response.getContentAsByteArray(), Map.class);
+        System.out.println(message);
+    }
+
     @Test
     public void releaseModel() throws Exception {
         File repoPath = new File(model_repo_location);
