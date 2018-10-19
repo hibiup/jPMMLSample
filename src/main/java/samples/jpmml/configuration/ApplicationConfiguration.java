@@ -78,35 +78,5 @@ public class ApplicationConfiguration implements AsyncConfigurer {
             ResponseEntity<Object> entity =  new ResponseEntity(t, HttpStatus.INTERNAL_SERVER_ERROR);
             return entity;
         }
-
-        @ExceptionHandler(value = { IllegalArgumentException.class })
-        public @ResponseBody
-        ResponseEntity<Object> invalidInputError(final IllegalArgumentException t){
-            logger.error(t.getMessage(), t);
-            ResponseEntity<Object> entity =  new ResponseEntity(
-                    new HashMap<String, Object>() { { put("Error", t.getMessage()); }},
-                    HttpStatus.BAD_REQUEST);
-            return entity;
-        }
-
-        @ExceptionHandler(value = { FileAlreadyExistsException.class })
-        public @ResponseBody
-        ResponseEntity<Object> modelExistsError(final FileAlreadyExistsException t){
-            logger.error(t.getMessage(), t);
-            ResponseEntity<Object> entity =  new ResponseEntity(
-                    new HashMap<String, Object>() { { put("Error", t.getMessage()); }},
-                    HttpStatus.CONFLICT);
-            return entity;
-        }
-
-        /*@ExceptionHandler(value = { FileNotFoundException.class })
-        public @ResponseBody
-        ResponseEntity<Object> modelNotFoundError(final FileNotFoundException t){
-            logger.error(t.getMessage(), t);
-            ResponseEntity<Object> entity =  new ResponseEntity(
-                    new HashMap<String, Object>() { { put("Error", t.getMessage()); }},
-                    HttpStatus.GONE);
-            return entity;
-        }*/
     }
 }
